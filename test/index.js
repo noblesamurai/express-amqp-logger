@@ -4,9 +4,11 @@ const expect = chai.expect;
 
 chai.use(dirtyChai);
 
-describe('my thing', function () {
-  it('should work', function () {
-    expect(true).to.be.true;
-    throw new Error('unimplemented');
+describe('amqp-logger', function () {
+  it('should handle bad config', function () {
+    const logger = require('..')({});
+    expect(logger().log).to.be.a('function');
+    expect(logger().flush).to.be.a('function');
+    return logger().flush();
   });
 });
