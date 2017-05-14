@@ -17,7 +17,7 @@ const debug = require('debug')('express-amqp-logger');
  * routingKey - the RK to publish logs to
  */
 function main (config) {
-  const amqp = Promise.resolve().then(function () {
+  const connected = Promise.resolve().then(function () {
     return require('amqp-wrapper')(config);
   }).then(function (amqp) {
     return amqp.connect().then(function () { return amqp; });
@@ -33,14 +33,16 @@ function main (config) {
     function flush () {
       if (flushed) throw new Error('Already flushed.');
       flushed = true;
-      return amqp.then(function (result) {
-        if (result === 'failed') return Promise.resolve();
+      return connected.then(function (amqp) {
+        if (amqp === 'failed') return Promise.resolve();
         return amqp.publish(config.routingKey, logs).catch(console.error);
       });
     }
 
     function log (type, payload) {
-      logs.push({ type: payload });
+      const entry = {};
+      entry[type] = payload;
+      logs.push(entry);
     }
 
     return {
