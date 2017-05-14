@@ -16,7 +16,7 @@ const debug = require('debug')('express-amqp-logger');
  * exchange - the exchange that will be asserted and used to publish to
  * routingKey - the RK to publish logs to
  */
-function main(config) {
+function main (config) {
   const amqp = Promise.resolve().then(function () {
     return require('amqp-wrapper')(config);
   }).then(function (amqp) {
@@ -48,6 +48,6 @@ function main(config) {
       flush: flush
     };
   };
-};
+}
 
 module.exports = main;
