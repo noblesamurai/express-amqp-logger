@@ -1,5 +1,5 @@
 {
-  "name": "express-amqp-logger",
+  "name": "log2amqp",
   "description": "Log json data to amqp from express routes.",
   "version": "1.0.0",
   "author": "Tim Allen <tim@noblesamurai.com>",
