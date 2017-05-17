@@ -21,7 +21,7 @@
     "url": "https://github.com/noblesamurai/node-log2amqp/issues"
   },
   "engines": {
-    "node": ">=0.4.0 <8",
+    "node": ">=4.0",
     "npm": "3.x"
   },
   "dependencies": {
