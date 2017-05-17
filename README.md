@@ -1,6 +1,6 @@
-# Express-amqp-logger [![Build Status](https://secure.travis-ci.org/noblesamurai/express-amqp-logger.png?branch=master)](http://travis-ci.org/noblesamurai/express-amqp-logger) [![NPM version](https://badge-me.herokuapp.com/api/npm/express-amqp-logger.png)](http://badges.enytc.com/for/npm/express-amqp-logger)
+# log2amqp [![Build Status](https://secure.travis-ci.org/noblesamurai/node-log2amqp.png?branch=master)](http://travis-ci.org/noblesamurai/node-log2amqp) [![NPM version](https://badge-me.herokuapp.com/api/npm/log2amqp.png)](http://badges.enytc.com/for/npm/log2amqp)
 
-> Log json data to amqp from express routes.
+> Log json data to amqp.
 
 ## Purpose
 
@@ -50,7 +50,7 @@ the output above.
 This module is installed via npm:
 
 ``` bash
-$ npm install express-amqp-logger
+$ npm install log2amqp
 ```
 ## License
 
