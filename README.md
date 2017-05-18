@@ -1,22 +1,46 @@
-# Express-amqp-logger [![Build Status](https://secure.travis-ci.org/noblesamurai/express-amqp-logger.png?branch=master)](http://travis-ci.org/noblesamurai/express-amqp-logger) [![NPM version](https://badge-me.herokuapp.com/api/npm/express-amqp-logger.png)](http://badges.enytc.com/for/npm/express-amqp-logger)
+# log2amqp [![Build Status](https://secure.travis-ci.org/noblesamurai/node-log2amqp.png?branch=master)](http://travis-ci.org/noblesamurai/node-log2amqp) [![NPM version](https://badge-me.herokuapp.com/api/npm/log2amqp.png)](http://badges.enytc.com/for/npm/log2amqp)
 
-> Log json data to amqp from express routes.
+> Log json data to amqp.
 
 ## Purpose
-- What problem does this module solve? At least a few sentences.
-PLEASE_FILL_IN_HERE
+
+Use this for data dumps to amqp.
 
 ## Usage
 
 ```js
-// Several examples of usage.
-// Usually copying and pasting code from the tests and making the code standalone suffices.
-// PLEASE_FILL_IN_HERE
+const config = { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' };
+const Logger = require('log2amqp')(config);
+let logger = Logger();
+payload = { this: 'thing'};
+logger.log('kind', payload);
+logger.log('kind2', 'chris');
+logger.flush().then(() => {
+  // [{ kind: payload }, { kind2: 'chris' }] is flushed to amqp routingKey
+});
 ```
 
 ## API
+<a name="main"></a>
 
-PLEASE_FILL_IN_HERE
+## main(config)
+Calling this with given config returns a function getLogger().
+When called, getLogger will return an object:
+{log, flush}
+Call log to append logs.
+Call flush to manually flush (you must do this.)
+
+config
+
+url - the url of the rabbitmq server
+exchange - the exchange that will be asserted and used to publish to
+routingKey - the RK to publish logs to
+
+**Kind**: global function
+
+| Param | Type |
+| --- | --- |
+| config | <code>Object</code> |
 
 Note: To regenerate this section from the jsdoc run `npm run docs` and paste
 the output above.
@@ -26,7 +50,7 @@ the output above.
 This module is installed via npm:
 
 ``` bash
-$ npm install express-amqp-logger
+$ npm install log2amqp
 ```
 ## License
 

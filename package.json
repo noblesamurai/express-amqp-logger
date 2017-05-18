@@ -1,7 +1,7 @@
 {
-  "name": "express-amqp-logger",
+  "name": "log2amqp",
   "description": "Log json data to amqp from express routes.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Tim Allen <tim@noblesamurai.com>",
   "license": "BSD",
   "main": "index.js",
@@ -12,16 +12,16 @@
     "watch": "mocha --recursive --watch test",
     "docs": "jsdoc2md index.js"
   },
-  "homepage": "https://github.com/noblesamurai/express-amqp-logger",
+  "homepage": "https://github.com/noblesamurai/node-log2amqp",
   "repository": {
     "type": "git",
-    "url": "git://github.com/noblesamurai/express-amqp-logger.git"
+    "url": "git://github.com/noblesamurai/node-log2amqp.git"
   },
   "bugs": {
-    "url": "https://github.com/noblesamurai/express-amqp-logger/issues"
+    "url": "https://github.com/noblesamurai/node-log2amqp/issues"
   },
   "engines": {
-    "node": "6.x",
+    "node": ">=4.0",
     "npm": "3.x"
   },
   "dependencies": {
@@ -34,7 +34,9 @@
     "jsdoc-to-markdown": "~3.0.0",
     "mocha": "~3.3.0",
     "nyc": "^10.1.2",
-    "semistandard": "*"
+    "proxyquire": "^1.7.11",
+    "semistandard": "*",
+    "sinon": "^2.2.0"
   },
   "keywords": [],
   "nyc": {
