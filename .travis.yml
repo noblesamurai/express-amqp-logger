@@ -1,5 +1,6 @@
 language: node_js
 before_install: "! grep PLEASE_FILL_IN_HERE README.md"
 node_js:
+  - '4'
   - '6'
   - '7'
