@@ -1,4 +1,4 @@
-# log2amqp [![Build Status](https://secure.travis-ci.org/noblesamurai/node-log2amqp.png?branch=master)](http://travis-ci.org/noblesamurai/node-log2amqp) [![NPM version](https://badge-me.herokuapp.com/api/npm/log2amqp.png)](http://badges.enytc.com/for/npm/log2amqp)
+# log2amqp [![Build Status](https://travis-ci.org/noblesamurai/node-log2amqp.svg?branch=master)](http://travis-ci.org/noblesamurai/node-log2amqp) [![NPM version](https://badge-me.herokuapp.com/api/npm/log2amqp.png)](http://badges.enytc.com/for/npm/log2amqp)
 
 > Log json data to amqp.
 
