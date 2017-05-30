@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('express-amqp-logger');
+const debug = require('debug')('log2amqp');
 
 /**
  * @param {Object} config
