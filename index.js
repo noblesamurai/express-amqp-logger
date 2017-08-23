@@ -1,6 +1,7 @@
 'use strict';
 
 const debug = require('debug')('log2amqp');
+const AMQP = require('amqp-wrapper');
 
 /**
  * @param {Object} config
@@ -20,7 +21,7 @@ const debug = require('debug')('log2amqp');
  */
 function main (config) {
   const connected = Promise.resolve().then(function () {
-    return require('amqp-wrapper')(config);
+    return AMQP(config);
   }).then(function (amqp) {
     return amqp.connect().then(function () { return amqp; });
   }).catch(function (err) {
@@ -30,18 +31,26 @@ function main (config) {
 
   return function getLogger () {
     let flushed = false;
-    const logs = [];
+    let logs = [];
 
     function flush () {
       if (flushed) throw new Error('Already flushed.');
       flushed = true;
       return connected.then(function (amqp) {
         if (amqp === 'failed') return Promise.resolve();
-        return amqp.publish(config.routingKey, logs).catch(console.error);
+        return amqp.publish(config.routingKey, logs)
+          .catch(console.error)
+          .then(() => {
+            // We explicitly null this out just in case somehow there is a
+            // reference back to the logger in the logged payload.
+            // Such a circular reference would prevent garbage collection.
+            logs = null;
+          });
       });
     }
 
     function log (type, payload) {
+      if (flushed) throw new Error('Already flushed.');
       const entry = {};
       entry[type] = payload;
       logs.push(entry);
