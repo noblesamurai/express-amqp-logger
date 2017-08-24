@@ -41,10 +41,10 @@ function main (config) {
         return amqp.publish(config.routingKey, logs)
           .catch(console.error)
           .then(() => {
-            // We explicitly null this out just in case somehow there is a
+            // We explicitly set this to undefined just in case somehow there is a
             // reference back to the logger in the logged payload.
             // Such a circular reference would prevent garbage collection.
-            logs = null;
+            logs = undefined;
           });
       });
     }
