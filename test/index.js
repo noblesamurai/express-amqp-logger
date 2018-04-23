@@ -39,10 +39,36 @@ describe('amqp-logger', function () {
     return logger.flush().then(function () {
       expect(publishStub.callCount).to.equal(1);
       expect(publishStub.lastCall.args[0]).to.equal('mine');
-      expect(publishStub.lastCall.args[1].length).to.equal(3);
-      expect(publishStub.lastCall.args[1][0].moo).to.equal(obj);
-      expect(publishStub.lastCall.args[1][1].fips).to.equal(obj);
-      expect(publishStub.lastCall.args[1][2].crig).to.equal(arr);
+      expect(publishStub.lastCall.args[1].logs).to.be.ok();
+      expect(publishStub.lastCall.args[1].logs.length).to.equal(3);
+      expect(publishStub.lastCall.args[1].logs[0].moo).to.equal(obj);
+      expect(publishStub.lastCall.args[1].logs[1].fips).to.equal(obj);
+      expect(publishStub.lastCall.args[1].logs[2].crig).to.equal(arr);
+    });
+  });
+
+  it('should publish a uuid to identify the message', function () {
+    const publishStub = sinon.stub().resolves();
+    const logger = proxyquire('..', {
+      'amqp-wrapper': function () {
+        return {
+          connect: sinon.stub().resolves(),
+          publish: publishStub
+        };
+      }
+    })({
+      routingKey: 'mine'
+    })();
+    const obj = {thing: 'that'};
+    const arr = [1, 2, 3];
+    logger.log('moo', obj);
+    logger.log('fips', obj);
+    logger.log('crig', arr);
+    return logger.flush().then(function () {
+      expect(publishStub.callCount).to.equal(1);
+      expect(publishStub.lastCall.args[0]).to.equal('mine');
+      expect(publishStub.lastCall.args[1].id).to.be.ok();
+      expect(publishStub.lastCall.args[1].id).to.be.a('string');
     });
   });
 });

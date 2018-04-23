@@ -2,6 +2,7 @@
 
 const debug = require('debug')('log2amqp');
 const AMQP = require('amqp-wrapper');
+const uuid = require('uuid/v1');
 
 /**
  * @param {Object} config
@@ -38,7 +39,7 @@ function main (config) {
       flushed = true;
       return connected.then(function (amqp) {
         if (amqp === 'failed') return Promise.resolve();
-        return amqp.publish(config.routingKey, logs)
+        return amqp.publish(config.routingKey, { id: uuid(), logs })
           .catch(console.error)
           .then(() => {
             // We explicitly set this to undefined just in case somehow there is a
