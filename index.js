@@ -41,6 +41,7 @@ function main (config) {
         if (amqp === 'failed') return Promise.resolve();
         return amqp.publish(config.routingKey, {
           id: uuid(),
+          timestamp: Date.now(),
           'log2amqp-schema-version': '2.0.0',
           logs })
           .catch(console.error)
