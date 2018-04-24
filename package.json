@@ -1,7 +1,7 @@
 {
   "name": "log2amqp",
   "description": "Log json data to amqp from express routes.",
-  "version": "2.0.0-unique.2",
+  "version": "2.0.0-unique.3",
   "author": "Tim Allen <tim@noblesamurai.com>",
   "license": "BSD",
   "main": "index.js",
