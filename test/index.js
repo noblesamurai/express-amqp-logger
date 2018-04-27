@@ -36,7 +36,8 @@ describe('amqp-logger', function () {
           };
         }
       })({
-        routingKey: 'mine'
+        routingKey: 'mine',
+        source: 'my-source'
       })();
       obj = {thing: 'that'};
       arr = [1, 2, 3];
@@ -72,6 +73,13 @@ describe('amqp-logger', function () {
         expect(publishStub.lastCall.args[0]).to.equal('mine');
         expect(publishStub.lastCall.args[1].timestamp).to.be.ok();
         expect(publishStub.lastCall.args[1].timestamp).to.be.a('number');
+      });
+    });
+
+    it('should include the source in the message', function () {
+      return logger.flush().then(function () {
+        expect(publishStub.callCount).to.equal(1);
+        expect(publishStub.lastCall.args[1].source).equal('my-source');
       });
     });
   });

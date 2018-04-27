@@ -9,7 +9,10 @@ Use this for data dumps to amqp.
 ## Usage
 
 ```js
-const config = { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' };
+const config = {
+  source: 'my-source',
+  amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' }
+};
 const Logger = require('log2amqp')(config);
 let logger = Logger();
 payload = { this: 'thing'};
@@ -31,10 +34,10 @@ Call log to append logs.
 Call flush to manually flush (you must do this.)
 
 config
-
-url - the url of the rabbitmq server
-exchange - the exchange that will be asserted and used to publish to
-routingKey - the RK to publish logs to
+source - the source you are logging from
+amqp.url - the url of the rabbitmq server
+amqp.exchange - the exchange that will be asserted and used to publish to
+amqp.routingKey - the RK to publish logs to
 
 **Kind**: global function
 
