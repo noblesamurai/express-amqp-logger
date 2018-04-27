@@ -36,7 +36,7 @@ describe('amqp-logger', function () {
           };
         }
       })({
-        routingKey: 'mine',
+        amqp: { routingKey: 'mine' },
         source: 'my-source'
       })();
       obj = {thing: 'that'};

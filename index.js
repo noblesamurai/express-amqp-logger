@@ -39,7 +39,7 @@ function main (config) {
       flushed = true;
       return connected.then(function (amqp) {
         if (amqp === 'failed') return Promise.resolve();
-        return amqp.publish(config.routingKey, {
+        return amqp.publish(config.amqp.routingKey, {
           id: uuid(),
           timestamp: Date.now(),
           'log2amqp-schema-version': '2.0.0',
