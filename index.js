@@ -2,6 +2,7 @@
 
 const debug = require('debug')('log2amqp');
 const AMQP = require('amqp-wrapper');
+const uuid = require('uuid/v1');
 
 /**
  * @param {Object} config
@@ -14,14 +15,14 @@ const AMQP = require('amqp-wrapper');
  * Call flush to manually flush (you must do this.)
  *
  * config
- *
- * url - the url of the rabbitmq server
- * exchange - the exchange that will be asserted and used to publish to
- * routingKey - the RK to publish logs to
+ * source - the source you are logging from
+ * amqp.url - the url of the rabbitmq server
+ * amqp.exchange - the exchange that will be asserted and used to publish to
+ * amqp.routingKey - the RK to publish logs to
  */
 function main (config) {
   const connected = Promise.resolve().then(function () {
-    return AMQP(config);
+    return AMQP(config.amqp);
   }).then(function (amqp) {
     return amqp.connect().then(function () { return amqp; });
   }).catch(function (err) {
@@ -38,7 +39,12 @@ function main (config) {
       flushed = true;
       return connected.then(function (amqp) {
         if (amqp === 'failed') return Promise.resolve();
-        return amqp.publish(config.routingKey, logs)
+        return amqp.publish(config.amqp.routingKey, {
+          id: uuid(),
+          timestamp: Date.now(),
+          'log2amqp-schema-version': '2.0.0',
+          source: config.source,
+          logs })
           .catch(console.error)
           .then(() => {
             // We explicitly set this to undefined just in case somehow there is a

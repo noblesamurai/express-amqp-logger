@@ -1,7 +1,7 @@
 {
   "name": "log2amqp",
   "description": "Log json data to amqp from express routes.",
-  "version": "1.1.2",
+  "version": "2.0.0-unique.5",
   "author": "Tim Allen <tim@noblesamurai.com>",
   "license": "BSD",
   "main": "index.js",
@@ -21,12 +21,13 @@
     "url": "https://github.com/noblesamurai/node-log2amqp/issues"
   },
   "engines": {
-    "node": ">=4.0",
+    "node": ">=6.0",
     "npm": "3.x"
   },
   "dependencies": {
     "amqp-wrapper": "^5.5.0",
-    "debug": "^2.6.6"
+    "debug": "^2.6.6",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
