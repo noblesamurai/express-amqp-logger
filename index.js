@@ -34,7 +34,7 @@ async function getAmqp (config) {
 function main (config) {
   const _amqp = getAmqp(config);
 
-  return function getLogger () {
+  return function getLogger (logConfig = {}) {
     let flushed = false;
     let logs = [];
 
@@ -44,13 +44,14 @@ function main (config) {
         flushed = true;
         const amqp = await _amqp;
         if (amqp === 'failed') return;
-        console.log(amqp, amqp.publish);
-        await amqp.publish(config.amqp.routingKey, {
+        const payload = {
           id: uuid(),
           timestamp: Date.now(),
-          'log2amqp-schema-version': '2.0.0',
+          'log2amqp-schema-version': '2.1.0',
           source: config.source,
-          logs });
+          logs };
+        if (logConfig.meta) payload.meta = logConfig.meta;
+        await amqp.publish(config.amqp.routingKey, payload);
       } catch (err) {
         debug(err);
       } finally {

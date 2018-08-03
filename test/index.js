@@ -90,6 +90,7 @@ describe('amqp-logger', function () {
       const logger = Logger({ meta: { blerg: 'thing' } });
       await logger.flush();
       expect(publishStub.callCount).to.equal(1);
+      expect(publishStub.lastCall.args[1].meta).to.be.an('object');
       expect(publishStub.lastCall.args[1].meta).to.include.key('blerg');
       expect(publishStub.lastCall.args[1].meta.blerg).to.equal('thing');
     });

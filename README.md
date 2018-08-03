@@ -13,8 +13,9 @@ const config = {
   source: 'my-source',
   amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' }
 };
+const loggerConfig = { meta: {/*...*/} };
 const Logger = require('log2amqp')(config);
-let logger = Logger();
+let logger = Logger(loggerConfig);
 payload = { this: 'thing'};
 logger.log('kind', payload);
 logger.log('kind2', 'chris');
@@ -22,6 +23,10 @@ logger.flush().then(() => {
   // [{ kind: payload }, { kind2: 'chris' }] is flushed to amqp routingKey
 });
 ```
+
+`logerConfig.meta` defines an object you want to apply to the whole logger
+session. It will be included at the top level in the logged payload (same level
+as `logs`).
 
 ## API
 <a name="main"></a>
@@ -87,4 +92,3 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
