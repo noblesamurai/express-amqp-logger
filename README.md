@@ -13,18 +13,17 @@ const config = {
   source: 'my-source',
   amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' }
 };
-const loggerConfig = { meta: {/*...*/} };
 const Logger = require('log2amqp')(config);
 let logger = Logger(loggerConfig);
 payload = { this: 'thing'};
 logger.log('kind', payload);
 logger.log('kind2', 'chris');
-logger.flush().then(() => {
+logger.flush({ meta: {/* ... */} }).then(() => {
   // [{ kind: payload }, { kind2: 'chris' }] is flushed to amqp routingKey
 });
 ```
 
-`logerConfig.meta` defines an object you want to apply to the whole logger
+`meta` defines an object you want to apply to the whole logger
 session. It will be included at the top level in the logged payload (same level
 as `logs`).
 

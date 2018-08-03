@@ -34,11 +34,12 @@ async function getAmqp (config) {
 function main (config) {
   const _amqp = getAmqp(config);
 
-  return function getLogger (logConfig = {}) {
+  return function getLogger () {
     let flushed = false;
     let logs = [];
 
-    async function flush () {
+    async function flush (opts = {}) {
+      const { meta } = opts;
       if (flushed) throw new Error('Already flushed.');
       try {
         flushed = true;
@@ -50,7 +51,7 @@ function main (config) {
           'log2amqp-schema-version': '2.1.0',
           source: config.source,
           logs };
-        if (logConfig.meta) payload.meta = logConfig.meta;
+        if (meta) payload.meta = meta;
         await amqp.publish(config.amqp.routingKey, payload);
       } catch (err) {
         debug(err);

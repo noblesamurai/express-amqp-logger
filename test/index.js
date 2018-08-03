@@ -87,8 +87,8 @@ describe('amqp-logger', function () {
     });
 
     it('should include an indexable key in the message', async function () {
-      const logger = Logger({ meta: { blerg: 'thing' } });
-      await logger.flush();
+      const logger = Logger();
+      await logger.flush({ meta: { blerg: 'thing' } });
       expect(publishStub.callCount).to.equal(1);
       expect(publishStub.lastCall.args[1].meta).to.be.an('object');
       expect(publishStub.lastCall.args[1].meta).to.include.key('blerg');
