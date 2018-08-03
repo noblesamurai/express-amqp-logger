@@ -23,12 +23,13 @@ describe('amqp-logger', function () {
   });
   describe('happy cases', function () {
     let publishStub;
+    let Logger;
     let logger;
     let obj;
     let arr;
     beforeEach(function () {
       publishStub = sinon.stub().resolves();
-      logger = proxyquire('..', {
+      Logger = proxyquire('..', {
         'amqp-wrapper': function () {
           return {
             connect: sinon.stub().resolves(),
@@ -38,7 +39,8 @@ describe('amqp-logger', function () {
       })({
         amqp: { routingKey: 'mine' },
         source: 'my-source'
-      })();
+      });
+      logger = Logger();
       obj = {thing: 'that'};
       arr = [1, 2, 3];
       logger.log('moo', obj);
@@ -81,6 +83,14 @@ describe('amqp-logger', function () {
         expect(publishStub.callCount).to.equal(1);
         expect(publishStub.lastCall.args[1].source).equal('my-source');
       });
+    });
+
+    it('should include an indexable key in the message', async function () {
+      const logger = Logger({ meta: { blerg: 'thing' } });
+      await logger.flush();
+      expect(publishStub.callCount).to.equal(1);
+      expect(publishStub.lastCall.args[1].meta).to.include.key('blerg');
+      expect(publishStub.lastCall.args[1].meta.blerg).to.equal('thing');
     });
   });
 });
