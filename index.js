@@ -4,6 +4,17 @@ const debug = require('debug')('log2amqp');
 const AMQP = require('amqp-wrapper');
 const uuid = require('uuid/v1');
 
+async function getAmqp (config) {
+  try {
+    const amqp = AMQP(config.amqp);
+    await amqp.connect();
+    return amqp;
+  } catch (err) {
+    debug('Error connecting to amqp', err);
+    return 'failed';
+  }
+}
+
 /**
  * @param {Object} config
  * @description
@@ -21,38 +32,33 @@ const uuid = require('uuid/v1');
  * amqp.routingKey - the RK to publish logs to
  */
 function main (config) {
-  const connected = Promise.resolve().then(function () {
-    return AMQP(config.amqp);
-  }).then(function (amqp) {
-    return amqp.connect().then(function () { return amqp; });
-  }).catch(function (err) {
-    debug('Error connecting to amqp', err);
-    return 'failed';
-  });
+  const _amqp = getAmqp(config);
 
   return function getLogger () {
     let flushed = false;
     let logs = [];
 
-    function flush () {
+    async function flush () {
       if (flushed) throw new Error('Already flushed.');
-      flushed = true;
-      return connected.then(function (amqp) {
-        if (amqp === 'failed') return Promise.resolve();
-        return amqp.publish(config.amqp.routingKey, {
+      try {
+        flushed = true;
+        const amqp = await _amqp;
+        if (amqp === 'failed') return;
+        console.log(amqp, amqp.publish);
+        await amqp.publish(config.amqp.routingKey, {
           id: uuid(),
           timestamp: Date.now(),
           'log2amqp-schema-version': '2.0.0',
           source: config.source,
-          logs })
-          .catch(console.error)
-          .then(() => {
-            // We explicitly set this to undefined just in case somehow there is a
-            // reference back to the logger in the logged payload.
-            // Such a circular reference would prevent garbage collection.
-            logs = undefined;
-          });
-      });
+          logs });
+      } catch (err) {
+        debug(err);
+      } finally {
+        // We explicitly set this to undefined just in case somehow there is a
+        // reference back to the logger in the logged payload.
+        // Such a circular reference would prevent garbage collection.
+        logs = undefined;
+      }
     }
 
     function log (type, payload) {
@@ -62,10 +68,7 @@ function main (config) {
       logs.push(entry);
     }
 
-    return {
-      log: log,
-      flush: flush
-    };
+    return { log, flush };
   };
 }
 

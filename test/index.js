@@ -1,10 +1,12 @@
 const chai = require('chai');
 const dirtyChai = require('dirty-chai');
+const chaiAsPromised = require('chai-as-promised');
 const expect = chai.expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
 chai.use(dirtyChai);
+chai.use(chaiAsPromised);
 
 describe('amqp-logger', function () {
   describe('unhappy cases', function () {
@@ -14,11 +16,10 @@ describe('amqp-logger', function () {
       expect(logger().flush).to.be.a('function');
       return logger().flush();
     });
-    it('should throw an error if you try to flush a logger more than once', function () {
-      const logger = require('..')({})();
-      return logger.flush().then(function () {
-        expect(logger.flush).to.throw(Error);
-      });
+    it('should reject if you try to flush a logger more than once', async function () {
+      const logger = require('..')({ amqp: {} })();
+      await logger.flush();
+      expect(logger.flush()).to.be.rejected();
     });
   });
   describe('happy cases', function () {
