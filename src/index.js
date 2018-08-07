@@ -42,44 +42,51 @@ function validateConfig (config) {
  */
 function main (config) {
   validateConfig(config);
-  const _amqp = getAmqp(config);
+  const state = {
+    amqp: getAmqp(config),
+    config
+  };
 
   return function getLogger () {
-    let flushed = false;
-    let logs = [];
-
-    async function flush (opts = {}) {
-      const { meta } = opts;
-      if (flushed) throw new Error('Already flushed.');
-      try {
-        flushed = true;
-        const amqp = await _amqp;
-        if (amqp === 'failed') return;
-        const payload = formatPayload(config, logs);
-        // FIXME(tim): Should handle this more nicely.
-        if (meta) payload.meta = meta;
-        await amqp.publish(config.amqp.routingKey, payload);
-      } catch (err) {
-        debug(err);
-      } finally {
-        // We explicitly set this to undefined just in case somehow there is a
-        // reference back to the logger in the logged payload.
-        // Such a circular reference would prevent garbage collection.
-        logs = undefined;
-      }
-    }
-
-    function log (type, payload) {
-      if (flushed) throw new Error('Already flushed.');
-      const entry = {
-        type,
-        data: payload
-      };
-      logs.push(entry);
-    }
-
-    return { log, flush };
+    const loggerState = {
+      flushed: false,
+      logs: []
+    };
+    return {
+      log: log.bind(null, state, loggerState),
+      flush: flush.bind(null, state, loggerState)
+    };
   };
+}
+
+async function flush (state, loggerState, opts = {}) {
+  const { meta } = opts;
+  if (loggerState.flushed) throw new Error('Already flushed.');
+  try {
+    loggerState.flushed = true;
+    const amqp = await state.amqp;
+    if (amqp === 'failed') return;
+    const payload = formatPayload(state.config, loggerState.logs);
+    // FIXME(tim): Should handle this more nicely.
+    if (meta) payload.meta = meta;
+    await amqp.publish(state.config.amqp.routingKey, payload);
+  } catch (err) {
+    debug(err);
+  } finally {
+    // We explicitly set this to undefined just in case somehow there is a
+    // reference back to the logger in the logged payload.
+    // Such a circular reference would prevent garbage collection.
+    loggerState.logs = undefined;
+  }
+}
+
+function log (state, loggerState, type, payload) {
+  if (loggerState.flushed) throw new Error('Already flushed.');
+  const entry = {
+    type,
+    data: payload
+  };
+  loggerState.logs.push(entry);
 }
 
 module.exports = main;
