@@ -10,14 +10,20 @@ chai.use(chaiAsPromised);
 
 describe('amqp-logger', function () {
   describe('unhappy cases', function () {
+    it('requires schemaVersion', function () {
+      expect(() => require('..')({})).to.throw();
+    });
+    it('throws on unsupported schema version', function () {
+      expect(() => require('..')({ schemaVersion: -1 })).to.throw();
+    });
     it('should handle bad config', function () {
-      const logger = require('..')({});
+      const logger = require('..')({ schemaVersion: 2 });
       expect(logger().log).to.be.a('function');
       expect(logger().flush).to.be.a('function');
       return logger().flush();
     });
     it('should reject if you try to flush a logger more than once', async function () {
-      const logger = require('..')({ amqp: {} })();
+      const logger = require('..')({ amqp: {}, schemaVersion: 2 })();
       await logger.flush();
       expect(logger.flush()).to.be.rejected();
     });
@@ -39,7 +45,8 @@ describe('amqp-logger', function () {
         }
       })({
         amqp: { routingKey: 'mine' },
-        source: 'my-source'
+        source: 'my-source',
+        schemaVersion: 2
       });
       logger = Logger();
       obj = {thing: 'that'};
@@ -93,6 +100,31 @@ describe('amqp-logger', function () {
       expect(publishStub.lastCall.args[1].meta).to.be.an('object');
       expect(publishStub.lastCall.args[1].meta).to.include.key('blerg');
       expect(publishStub.lastCall.args[1].meta.blerg).to.equal('thing');
+    });
+
+    it('support payload version 3', async function () {
+      const Logger = proxyquire('..', {
+        'amqp-wrapper': function () {
+          return {
+            connect: sinon.stub().resolves(),
+            publish: publishStub
+          };
+        }
+      })({
+        amqp: { routingKey: 'mine' },
+        source: 'my-source',
+        schemaVersion: 3
+      });
+      const logger = Logger();
+      const payload = { thing: 'with' };
+      logger.log('merf', payload);
+      await logger.flush();
+      expect(publishStub.callCount).to.equal(1);
+      const logged = publishStub.lastCall.args[1];
+      expect(logged.logs).to.be.ok();
+      expect(logged.logs).to.have.length(1);
+      expect(logged.logs[0].type).to.equal('merf');
+      expect(logged.logs[0].data).to.equal(payload);
     });
   });
 });

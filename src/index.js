@@ -2,7 +2,8 @@
 
 const debug = require('debug')('log2amqp');
 const AMQP = require('amqp-wrapper');
-const uuid = require('uuid/v1');
+const joi = require('joi');
+const formatPayload = require('./payload');
 
 async function getAmqp (config) {
   try {
@@ -30,8 +31,12 @@ async function getAmqp (config) {
  * amqp.url - the url of the rabbitmq server
  * amqp.exchange - the exchange that will be asserted and used to publish to
  * amqp.routingKey - the RK to publish logs to
+ * schemaVersion - schema version to use
  */
 function main (config) {
+  joi.assert(config, joi.object({
+    schemaVersion: joi.number().integer().valid([2, 3]).required()
+  }).unknown(true));
   const _amqp = getAmqp(config);
 
   return function getLogger () {
@@ -45,12 +50,8 @@ function main (config) {
         flushed = true;
         const amqp = await _amqp;
         if (amqp === 'failed') return;
-        const payload = {
-          id: uuid(),
-          timestamp: Date.now(),
-          'log2amqp-schema-version': '2.1.0',
-          source: config.source,
-          logs };
+        const payload = formatPayload(config, logs);
+        // FIXME(tim): Should handle this more nicely.
         if (meta) payload.meta = meta;
         await amqp.publish(config.amqp.routingKey, payload);
       } catch (err) {
@@ -65,8 +66,10 @@ function main (config) {
 
     function log (type, payload) {
       if (flushed) throw new Error('Already flushed.');
-      const entry = {};
-      entry[type] = payload;
+      const entry = {
+        type,
+        data: payload
+      };
       logs.push(entry);
     }
 
