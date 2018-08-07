@@ -16,14 +16,14 @@ describe('amqp-logger', function () {
     it('throws on unsupported schema version', function () {
       expect(() => require('..')({ schemaVersion: -1 })).to.throw();
     });
-    it('should handle bad config', function () {
-      const logger = require('..')({ schemaVersion: 2 });
+    it('should handle bad AMQP config', function () {
+      const logger = require('..')({ source: 'misha', schemaVersion: 2 });
       expect(logger().log).to.be.a('function');
       expect(logger().flush).to.be.a('function');
       return logger().flush();
     });
     it('should reject if you try to flush a logger more than once', async function () {
-      const logger = require('..')({ amqp: {}, schemaVersion: 2 })();
+      const logger = require('..')({ source: 'tom', amqp: {}, schemaVersion: 2 })();
       await logger.flush();
       expect(logger.flush()).to.be.rejected();
     });
