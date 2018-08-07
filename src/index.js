@@ -16,6 +16,13 @@ async function getAmqp (config) {
   }
 }
 
+function validateConfig (config) {
+  joi.assert(config, joi.object({
+    source: joi.string().required(),
+    schemaVersion: joi.number().integer().valid([2, 3]).required()
+  }).unknown(true));
+}
+
 /**
  * @param {Object} config
  * @description
@@ -34,11 +41,7 @@ async function getAmqp (config) {
  * schemaVersion - schema version to use
  */
 function main (config) {
-  joi.assert(config, joi.object({
-    source: joi.string().required(),
-    schemaVersion: joi.number().integer().valid([2, 3]).required()
-  }).unknown(true));
-
+  validateConfig(config);
   const _amqp = getAmqp(config);
 
   return function getLogger () {
