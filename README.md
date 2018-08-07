@@ -14,7 +14,7 @@ const config = {
   amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' }
 };
 const Logger = require('log2amqp')(config);
-let logger = Logger(loggerConfig);
+let logger = Logger();
 payload = { this: 'thing'};
 logger.log('kind', payload);
 logger.log('kind2', 'chris');
