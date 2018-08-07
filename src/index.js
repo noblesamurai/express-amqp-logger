@@ -67,7 +67,6 @@ async function flush (state, loggerState, opts = {}) {
     const amqp = await state.amqp;
     if (amqp === 'failed') return;
     const payload = formatPayload(state.config, loggerState.logs);
-    // FIXME(tim): Should handle this more nicely.
     if (meta) payload.meta = meta;
     await amqp.publish(state.config.amqp.routingKey, payload);
   } catch (err) {
