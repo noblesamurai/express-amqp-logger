@@ -1,17 +1,19 @@
 # log2amqp [![Build Status](https://travis-ci.org/noblesamurai/node-log2amqp.svg?branch=master)](http://travis-ci.org/noblesamurai/node-log2amqp) [![NPM version](https://badge-me.herokuapp.com/api/npm/log2amqp.png)](http://badges.enytc.com/for/npm/log2amqp)
 
-> Log json data to amqp.
+> Log JSON data to AMQP.
 
 ## Purpose
 
-Use this for data dumps to amqp.
+Use this for data dumps to AMQP.
 
 ## Usage
 
 ```js
 const config = {
   source: 'my-source',
-  amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' }
+  amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo',
+  schemaVersion: 3
+ }
 };
 const Logger = require('log2amqp')(config);
 let logger = Logger();
@@ -25,7 +27,10 @@ logger.flush({ meta: {/* ... */} }).then(() => {
 
 `meta` defines an object you want to apply to the whole logger
 session. It will be included at the top level in the logged payload (same level
-as `logs`).
+as `logs`). You may want to do this so you can e.g. easily index certain fields
+in the JSON payload  (if you are writing from the queue to a DB table) or just if
+there are fields that apply across the whole session the you want to normalise for
+any reason.
 
 ## API
 <a name="main"></a>
@@ -42,6 +47,8 @@ source - the source you are logging from
 amqp.url - the url of the rabbitmq server
 amqp.exchange - the exchange that will be asserted and used to publish to
 amqp.routingKey - the RK to publish logs to
+schemaVersion = The schema version for the logging payload.  Currently supported
+values are 2 and 3.
 
 **Kind**: global function
 
