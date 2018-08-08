@@ -49,12 +49,12 @@ Class to manage a single logging session that collects logs and flushes them to
 <a name="new_AMQPLogger_new"></a>
 
 ### new AMQPLogger(config)
-config
-source - the source you are logging from
-amqp.url - the url of the rabbitmq server
-amqp.exchange - the exchange that will be asserted and used to publish to
-amqp.routingKey - the RK to publish logs to
-schemaVersion - schema version to use. Valid values are 2, 3.
+- config
+  - source - the source you are logging from
+  - amqp.url - the url of the rabbitmq server
+  - amqp.exchange - the exchange that will be asserted and used to publish to
+  - amqp.routingKey - the RK to publish logs to
+  - schemaVersion - schema version to use. Valid values are 2, 3.
 
 
 | Param | Type |
