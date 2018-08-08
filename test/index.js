@@ -8,47 +8,49 @@ const sinon = require('sinon');
 chai.use(dirtyChai);
 chai.use(chaiAsPromised);
 
+const AMQPLogger = require('..');
+
 describe('amqp-logger', function () {
   describe('unhappy cases', function () {
     it('requires schemaVersion', function () {
-      expect(() => require('..')({})).to.throw();
+      expect(() => new AMQPLogger({})).to.throw();
     });
     it('throws on unsupported schema version', function () {
-      expect(() => require('..')({ schemaVersion: -1 })).to.throw();
+      expect(() => new AMQPLogger({ schemaVersion: -1 })).to.throw();
     });
     it('should handle bad AMQP config', function () {
-      const logger = require('..')({ source: 'misha', schemaVersion: 2 });
-      expect(logger().log).to.be.a('function');
-      expect(logger().flush).to.be.a('function');
-      return logger().flush();
+      const logger = new AMQPLogger({ source: 'misha', schemaVersion: 2 });
+      expect(logger.log).to.be.a('function');
+      expect(logger.flush).to.be.a('function');
+      return logger.flush();
     });
     it('should reject if you try to flush a logger more than once', async function () {
-      const logger = require('..')({ source: 'tom', amqp: {}, schemaVersion: 2 })();
+      const logger = new AMQPLogger({ source: 'tom', amqp: {}, schemaVersion: 2 });
       await logger.flush();
       expect(logger.flush()).to.be.rejected();
     });
   });
   describe('happy cases', function () {
     let publishStub;
-    let Logger;
     let logger;
     let obj;
     let arr;
     beforeEach(function () {
       publishStub = sinon.stub().resolves();
-      Logger = proxyquire('..', {
+      const AMQPLogger = proxyquire('..', {
         'amqp-wrapper': function () {
           return {
             connect: sinon.stub().resolves(),
             publish: publishStub
           };
         }
-      })({
+      });
+      const config = {
         amqp: { routingKey: 'mine' },
         source: 'my-source',
         schemaVersion: 2
-      });
-      logger = Logger();
+      };
+      logger = new AMQPLogger(config);
       obj = {thing: 'that'};
       arr = [1, 2, 3];
       logger.log('moo', obj);
@@ -94,7 +96,6 @@ describe('amqp-logger', function () {
     });
 
     it('should include an indexable key in the message', async function () {
-      const logger = Logger();
       await logger.flush({ meta: { blerg: 'thing' } });
       expect(publishStub.callCount).to.equal(1);
       expect(publishStub.lastCall.args[1].meta).to.be.an('object');
@@ -103,19 +104,20 @@ describe('amqp-logger', function () {
     });
 
     it('support payload version 3', async function () {
-      const Logger = proxyquire('..', {
+      const AMQPLogger = proxyquire('..', {
         'amqp-wrapper': function () {
           return {
             connect: sinon.stub().resolves(),
             publish: publishStub
           };
         }
-      })({
+      });
+      const config = {
         amqp: { routingKey: 'mine' },
         source: 'my-source',
         schemaVersion: 3
-      });
-      const logger = Logger();
+      };
+      const logger = new AMQPLogger(config);
       const payload = { thing: 'with' };
       logger.log('merf', payload);
       await logger.flush();

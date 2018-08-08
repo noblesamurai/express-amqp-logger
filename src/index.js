@@ -5,9 +5,9 @@ const AMQP = require('amqp-wrapper');
 const joi = require('joi');
 const formatPayload = require('./payload');
 
-async function getAmqp (config) {
+async function getAMQP (config) {
   try {
-    const amqp = AMQP(config.amqp);
+    const amqp = AMQP(config);
     await amqp.connect();
     return amqp;
   } catch (err) {
@@ -40,52 +40,43 @@ function validateConfig (config) {
  * amqp.routingKey - the RK to publish logs to
  * schemaVersion - schema version to use
  */
-function main (config) {
-  validateConfig(config);
-  const state = {
-    amqp: getAmqp(config),
-    config
-  };
+class AMQPLogger {
+  constructor (config) {
+    validateConfig(config);
+    this.config = config;
+    this.amqp = getAMQP(config.amqp);
+    this.flushed = false;
+    this.logs = [];
+  }
 
-  return function getLogger () {
-    const loggerState = {
-      flushed: false,
-      logs: []
-    };
-    return {
-      log: log.bind(null, state, loggerState),
-      flush: flush.bind(null, state, loggerState)
-    };
-  };
-}
+  async flush (opts = {}) {
+    const { meta } = opts;
+    if (this.flushed) throw new Error('Already flushed.');
+    try {
+      this.flushed = true;
+      const amqp = await this.amqp;
+      if (amqp === 'failed') return;
+      const payload = formatPayload(this.config, this.logs);
+      if (meta) payload.meta = meta;
+      await amqp.publish(this.config.amqp.routingKey, payload);
+    } catch (err) {
+      debug(err);
+    } finally {
+      // We explicitly set this to undefined just in case somehow there is a
+      // reference back to the logger in the logged payload.
+      // Such a circular reference would prevent garbage collection.
+      this.logs = undefined;
+    }
+  }
 
-async function flush (state, loggerState, opts = {}) {
-  const { meta } = opts;
-  if (loggerState.flushed) throw new Error('Already flushed.');
-  try {
-    loggerState.flushed = true;
-    const amqp = await state.amqp;
-    if (amqp === 'failed') return;
-    const payload = formatPayload(state.config, loggerState.logs);
-    if (meta) payload.meta = meta;
-    await amqp.publish(state.config.amqp.routingKey, payload);
-  } catch (err) {
-    debug(err);
-  } finally {
-    // We explicitly set this to undefined just in case somehow there is a
-    // reference back to the logger in the logged payload.
-    // Such a circular reference would prevent garbage collection.
-    loggerState.logs = undefined;
+  log (type, payload) {
+    if (this.flushed) throw new Error('Already flushed.');
+    const entry = {
+      type,
+      data: payload
+    };
+    this.logs.push(entry);
   }
 }
 
-function log (state, loggerState, type, payload) {
-  if (loggerState.flushed) throw new Error('Already flushed.');
-  const entry = {
-    type,
-    data: payload
-  };
-  loggerState.logs.push(entry);
-}
-
-module.exports = main;
+module.exports = AMQPLogger;
