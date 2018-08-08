@@ -33,28 +33,46 @@ there are fields that apply across the whole session the you want to normalise f
 any reason.
 
 ## API
-<a name="main"></a>
+<a name="AMQPLogger"></a>
 
-## main(config)
-Calling this with given config returns a function getLogger().
-When called, getLogger will return an object:
-{log, flush}
-Call log to append logs.
-Call flush to manually flush (you must do this.)
+## AMQPLogger
+Class to manage a single logging session that collects logs and flushes them to
+ AMQP.
 
+**Kind**: global class
+
+* [AMQPLogger](#AMQPLogger)
+    * [new AMQPLogger(config)](#new_AMQPLogger_new)
+    * [.log()](#AMQPLogger+log)
+    * [.flush()](#AMQPLogger+flush)
+
+<a name="new_AMQPLogger_new"></a>
+
+### new AMQPLogger(config)
 config
 source - the source you are logging from
 amqp.url - the url of the rabbitmq server
 amqp.exchange - the exchange that will be asserted and used to publish to
 amqp.routingKey - the RK to publish logs to
-schemaVersion = The schema version for the logging payload.  Currently supported
-values are 2 and 3.
+schemaVersion - schema version to use. Valid values are 2, 3.
 
-**Kind**: global function
 
 | Param | Type |
 | --- | --- |
 | config | <code>Object</code> |
+
+<a name="AMQPLogger+log"></a>
+
+### amqpLogger.log()
+Add a log to the current state.
+
+**Kind**: instance method of [<code>AMQPLogger</code>](#AMQPLogger)
+<a name="AMQPLogger+flush"></a>
+
+### amqpLogger.flush()
+Flush logs to AMQP as a single message.
+
+**Kind**: instance method of [<code>AMQPLogger</code>](#AMQPLogger)
 
 Note: To regenerate this section from the jsdoc run `npm run docs` and paste
 the output above.
