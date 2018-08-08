@@ -23,24 +23,23 @@ function validateConfig (config) {
   }).unknown(true));
 }
 
-/**
- * @param {Object} config
- * @description
- *
- * Calling this with given config returns a function getLogger().
- * When called, getLogger will return an object:
- * {log, flush}
- * Call log to append logs.
- * Call flush to manually flush (you must do this.)
- *
- * config
- * source - the source you are logging from
- * amqp.url - the url of the rabbitmq server
- * amqp.exchange - the exchange that will be asserted and used to publish to
- * amqp.routingKey - the RK to publish logs to
- * schemaVersion - schema version to use
+/** Class to manage a single logging session that collects logs and flushes them to
+ *  AMQP.
  */
+
 class AMQPLogger {
+  /**
+   * Create an AMQPLogger instance.
+   * @param {Object} config
+   *
+   * @description
+   * config
+   * source - the source you are logging from
+   * amqp.url - the url of the rabbitmq server
+   * amqp.exchange - the exchange that will be asserted and used to publish to
+   * amqp.routingKey - the RK to publish logs to
+   * schemaVersion - schema version to use. Valid values are 2, 3.
+   */
   constructor (config) {
     validateConfig(config);
     this.config = config;
@@ -49,6 +48,18 @@ class AMQPLogger {
     this.logs = [];
   }
 
+  /**
+   * Add a log to the current state.
+   */
+  log (type, payload) {
+    if (this.flushed) throw new Error('Already flushed.');
+    const entry = { type, data: payload };
+    this.logs.push(entry);
+  }
+
+  /**
+   * Flush logs to AMQP as a single message.
+   */
   async flush (opts = {}) {
     const { meta } = opts;
     if (this.flushed) throw new Error('Already flushed.');
@@ -67,15 +78,6 @@ class AMQPLogger {
       // Such a circular reference would prevent garbage collection.
       this.logs = undefined;
     }
-  }
-
-  log (type, payload) {
-    if (this.flushed) throw new Error('Already flushed.');
-    const entry = {
-      type,
-      data: payload
-    };
-    this.logs.push(entry);
   }
 }
 
