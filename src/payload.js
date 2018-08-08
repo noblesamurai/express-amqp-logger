@@ -12,11 +12,7 @@ module.exports = function formatPayload (config, logs) {
   if (config.schemaVersion === 2) {
     return Object.assign(common(config), {
       'log2amqp-schema-version': '2.1.0',
-      logs: logs.map(l => {
-        const ret = {};
-        ret[l.type] = l.data;
-        return ret;
-      })
+      logs: logs.map(({ type, data }) => ({ [type]: data }))
     });
   } else if (config.schemaVersion === 3) {
     return Object.assign(common(config), {
