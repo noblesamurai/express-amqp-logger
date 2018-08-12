@@ -1,16 +1,16 @@
 {
   "name": "log2amqp",
   "description": "Log json data to amqp from express routes.",
-  "version": "2.0.0",
+  "version": "3.0.0-meta.1",
   "author": "Tim Allen <tim@noblesamurai.com>",
   "license": "BSD",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "coverage": "nyc -a -c -r html -r text npm test",
     "pretest": "semistandard --env mocha",
     "test": "mocha --recursive test",
     "watch": "mocha --recursive --watch test",
-    "docs": "jsdoc2md index.js"
+    "docs": "jsdoc2md src/index.js"
   },
   "homepage": "https://github.com/noblesamurai/node-log2amqp",
   "repository": {
@@ -21,29 +21,36 @@
     "url": "https://github.com/noblesamurai/node-log2amqp/issues"
   },
   "engines": {
-    "node": ">=6.0",
+    "node": ">=8.0",
     "npm": "3.x"
   },
   "dependencies": {
     "amqp-wrapper": "^5.5.0",
     "debug": "^2.6.6",
+    "joi": "^13.5.2",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "dirty-chai": "^1.2.2",
-    "jsdoc-to-markdown": "~3.0.0",
-    "mocha": "~3.3.0",
+    "jsdoc-to-markdown": "^4.0.1",
+    "mocha": "^5.2.0",
     "nyc": "^10.1.2",
     "proxyquire": "^1.7.11",
     "semistandard": "*",
-    "sinon": "^2.2.0"
+    "sinon": "^6.1.4"
   },
   "keywords": [],
   "nyc": {
     "exclude": [
       "coverage",
       "test"
+    ]
+  },
+  "semistandard": {
+    "env": [
+      "mocha"
     ]
   }
 }
