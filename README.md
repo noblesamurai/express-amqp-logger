@@ -21,7 +21,19 @@ payload = { this: 'thing'};
 logger.log('kind', payload);
 logger.log('kind2', 'chris');
 logger.flush({ meta: {/* ... */} }).then(() => {
-  // [{ kind: payload }, { kind2: 'chris' }] is flushed to amqp routingKey
+  // [{ kind: payload }, { kind2: 'chris' }] is flushed to amqp routingKey (schema === 2)
+  // OR
+  /* 
+  [
+    { type: 'kind',
+     data: 'payload'
+     }, 
+    {
+      type: 'kind2',
+      data: 'chris'
+    }
+  ] is flushed to amqp routingKey (schema === 3)
+  */
 });
 ```
 
