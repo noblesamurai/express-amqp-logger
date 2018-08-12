@@ -15,8 +15,8 @@ const config = {
   schemaVersion: 3
  }
 };
-const Logger = require('log2amqp')(config);
-let logger = Logger();
+const AMQPLogger = require('log2amqp');
+const logger = new AMQPLogger(config);
 payload = { this: 'thing'};
 logger.log('kind', payload);
 logger.log('kind2', 'chris');
