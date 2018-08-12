@@ -1,49 +1,78 @@
 # log2amqp [![Build Status](https://travis-ci.org/noblesamurai/node-log2amqp.svg?branch=master)](http://travis-ci.org/noblesamurai/node-log2amqp) [![NPM version](https://badge-me.herokuapp.com/api/npm/log2amqp.png)](http://badges.enytc.com/for/npm/log2amqp)
 
-> Log json data to amqp.
+> Log JSON data to AMQP.
 
 ## Purpose
 
-Use this for data dumps to amqp.
+Use this for data dumps to AMQP.
 
 ## Usage
 
 ```js
 const config = {
   source: 'my-source',
-  amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo' }
+  amqp: { url: 'amqp://user:pw@myserver/blah', exchange: 'myexchange', routingKey: 'keyToRouteTo',
+  schemaVersion: 3
+ }
 };
 const Logger = require('log2amqp')(config);
 let logger = Logger();
 payload = { this: 'thing'};
 logger.log('kind', payload);
 logger.log('kind2', 'chris');
-logger.flush().then(() => {
+logger.flush({ meta: {/* ... */} }).then(() => {
   // [{ kind: payload }, { kind2: 'chris' }] is flushed to amqp routingKey
 });
 ```
 
+`meta` defines an object you want to apply to the whole logger
+session. It will be included at the top level in the logged payload (same level
+as `logs`). You may want to do this so you can e.g. easily index certain fields
+in the JSON payload  (if you are writing from the queue to a DB table) or just if
+there are fields that apply across the whole session the you want to normalise for
+any reason.
+
 ## API
-<a name="main"></a>
+<a name="AMQPLogger"></a>
 
-## main(config)
-Calling this with given config returns a function getLogger().
-When called, getLogger will return an object:
-{log, flush}
-Call log to append logs.
-Call flush to manually flush (you must do this.)
+## AMQPLogger
+Class to manage a single logging session that collects logs and flushes them to
+ AMQP.
 
-config
-source - the source you are logging from
-amqp.url - the url of the rabbitmq server
-amqp.exchange - the exchange that will be asserted and used to publish to
-amqp.routingKey - the RK to publish logs to
+**Kind**: global class
 
-**Kind**: global function
+* [AMQPLogger](#AMQPLogger)
+    * [new AMQPLogger(config)](#new_AMQPLogger_new)
+    * [.log()](#AMQPLogger+log)
+    * [.flush()](#AMQPLogger+flush)
+
+<a name="new_AMQPLogger_new"></a>
+
+### new AMQPLogger(config)
+- config
+  - source - the source you are logging from
+  - amqp.url - the url of the rabbitmq server
+  - amqp.exchange - the exchange that will be asserted and used to publish to
+  - amqp.routingKey - the RK to publish logs to
+  - schemaVersion - schema version to use. Valid values are 2, 3.
+
 
 | Param | Type |
 | --- | --- |
 | config | <code>Object</code> |
+
+<a name="AMQPLogger+log"></a>
+
+### amqpLogger.log()
+Add a log to the current state.
+
+**Kind**: instance method of [<code>AMQPLogger</code>](#AMQPLogger)
+<a name="AMQPLogger+flush"></a>
+
+### amqpLogger.flush()
+Flush logs to AMQP as a single message.
+
+**Kind**: instance method of [<code>AMQPLogger</code>](#AMQPLogger)
 
 Note: To regenerate this section from the jsdoc run `npm run docs` and paste
 the output above.
@@ -87,4 +116,3 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
 ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
