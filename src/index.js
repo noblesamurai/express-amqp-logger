@@ -70,6 +70,7 @@ class AMQPLogger {
       const payload = formatPayload(this.config, this.logs);
       if (meta) payload.meta = meta;
       await amqp.publish(this.config.amqp.routingKey, payload);
+      await amqp.close();
     } catch (err) {
       debug(err);
     } finally {
