@@ -63,21 +63,22 @@ class AMQPLogger {
   async flush (opts = {}) {
     const { meta } = opts;
     if (this.flushed) throw new Error('Already flushed.');
+    let amqp;
     try {
       this.flushed = true;
-      const amqp = await this.amqp;
+      amqp = await this.amqp;
       if (amqp === 'failed') return;
       const payload = formatPayload(this.config, this.logs);
       if (meta) payload.meta = meta;
       await amqp.publish(this.config.amqp.routingKey, payload);
     } catch (err) {
       debug(err);
-    } finally {
-      // We explicitly set this to undefined just in case somehow there is a
-      // reference back to the logger in the logged payload.
-      // Such a circular reference would prevent garbage collection.
-      this.logs = undefined;
     }
+    // We explicitly set this to undefined just in case somehow there is a
+    // reference back to the logger in the logged payload.
+    // Such a circular reference would prevent garbage collection.
+    this.logs = undefined;
+    try { amqp.close(); } catch (_err) {}
   }
 }
 
