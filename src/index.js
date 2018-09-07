@@ -33,12 +33,12 @@ class AMQPLogger {
    * @param {Object} config
    *
    * @description
-   * config
-   * source - the source you are logging from
-   * amqp.url - the url of the rabbitmq server
-   * amqp.exchange - the exchange that will be asserted and used to publish to
-   * amqp.routingKey - the RK to publish logs to
-   * schemaVersion - schema version to use. Valid values are 2, 3.
+   * - config
+   *   - source - the source you are logging from
+   *   - amqp.url - the url of the rabbitmq server
+   *   - amqp.exchange - the exchange that will be asserted and used to publish to
+   *   - amqp.routingKey - the RK to publish logs to
+   *   - schemaVersion - schema version to use. Valid values are 2, 3.
    */
   constructor (config) {
     validateConfig(config);
@@ -52,7 +52,7 @@ class AMQPLogger {
    * Add a log to the current state. Each call to log() results in a entry
    * added to the 'data' array placed at the top level of the published json.
    * @param {string} type
-   * @param {object} payload 
+   * @param {object} payload
    */
   log (type, payload) {
     if (this.flushed) throw new Error('Already flushed.');
@@ -62,7 +62,7 @@ class AMQPLogger {
 
   /**
    * Flush logs to AMQP as a single message.
-   * @param {object} opts 
+   * @param {object} opts
    * @description
    * opts.meta - This data is put in a top level 'meta' field in the published JSON.
    */
