@@ -49,7 +49,10 @@ class AMQPLogger {
   }
 
   /**
-   * Add a log to the current state.
+   * Add a log to the current state. Each call to log() results in a entry
+   * added to the 'data' array placed at the top level of the published json.
+   * @param {string} type
+   * @param {object} payload 
    */
   log (type, payload) {
     if (this.flushed) throw new Error('Already flushed.');
@@ -59,6 +62,9 @@ class AMQPLogger {
 
   /**
    * Flush logs to AMQP as a single message.
+   * @param {object} opts 
+   * @description
+   * opts.meta - This data is put in a top level 'meta' field in the published JSON.
    */
   async flush (opts = {}) {
     const { meta } = opts;
