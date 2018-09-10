@@ -1,7 +1,7 @@
 {
   "name": "log2amqp",
   "description": "Log json data to amqp.",
-  "version": "3.0.2-videos.0",
+  "version": "3.0.2-videos.1",
   "author": "Tim Allen <tim@noblesamurai.com>",
   "license": "BSD",
   "main": "src/index.js",
