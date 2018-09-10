@@ -11,7 +11,7 @@ async function getAMQP (config) {
     await amqp.connect();
     return amqp;
   } catch (err) {
-    debug('Error connecting to amqp', err);
+    debug('Error connecting to amqp', { config }, err.message);
     return 'failed';
   }
 }
