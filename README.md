@@ -45,6 +45,7 @@ there are fields that apply across the whole session the you want to normalise f
 any reason.
 
 ## API
+
 <a name="AMQPLogger"></a>
 
 ## AMQPLogger
@@ -55,8 +56,8 @@ Class to manage a single logging session that collects logs and flushes them to
 
 * [AMQPLogger](#AMQPLogger)
     * [new AMQPLogger(config)](#new_AMQPLogger_new)
-    * [.log()](#AMQPLogger+log)
-    * [.flush()](#AMQPLogger+flush)
+    * [.log(type, payload)](#AMQPLogger+log)
+    * [.flush(opts)](#AMQPLogger+flush)
 
 <a name="new_AMQPLogger_new"></a>
 
@@ -68,23 +69,33 @@ Class to manage a single logging session that collects logs and flushes them to
   - amqp.routingKey - the RK to publish logs to
   - schemaVersion - schema version to use. Valid values are 2, 3.
 
-
 | Param | Type |
 | --- | --- |
 | config | <code>Object</code> |
 
 <a name="AMQPLogger+log"></a>
 
-### amqpLogger.log()
-Add a log to the current state.
+### amqpLogger.log(type, payload)
+Add a log to the current state. Each call to log() results in a entry
+added to the 'data' array placed at the top level of the published json.
 
 **Kind**: instance method of [<code>AMQPLogger</code>](#AMQPLogger)
+
+| Param | Type |
+| --- | --- |
+| type | <code>string</code> |
+| payload | <code>object</code> |
+
 <a name="AMQPLogger+flush"></a>
 
-### amqpLogger.flush()
-Flush logs to AMQP as a single message.
+### amqpLogger.flush(opts)
+opts.meta - This data is put in a top level 'meta' field in the published JSON.
 
 **Kind**: instance method of [<code>AMQPLogger</code>](#AMQPLogger)
+
+| Param | Type |
+| --- | --- |
+| opts | <code>object</code> |
 
 Note: To regenerate this section from the jsdoc run `npm run docs` and paste
 the output above.
