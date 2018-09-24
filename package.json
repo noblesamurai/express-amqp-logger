@@ -6,7 +6,7 @@
   "license": "BSD",
   "main": "src/index.js",
   "scripts": {
-    "coverage": "nyc -a -c -r html -r text npm test",
+    "coverage": "nyc -a -c -r html -r text -r lcov npm test",
     "pretest": "semistandard --env mocha",
     "test": "mocha --recursive test",
     "watch": "mocha --recursive --watch test",
