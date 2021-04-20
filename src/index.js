@@ -1,13 +1,11 @@
-'use strict';
-
 const debug = require('debug')('log2amqp');
-const AMQP = require('amqp-wrapper');
+const AMQP = require('simple-amqplib');
 const joi = require('joi');
 const formatPayload = require('./payload');
 
 async function getAMQP (config) {
   try {
-    const amqp = AMQP(config);
+    const amqp = new AMQP(config);
     await amqp.connect();
     return amqp;
   } catch (err) {

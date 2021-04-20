@@ -6,7 +6,7 @@
   "license": "BSD",
   "main": "src/index.js",
   "scripts": {
-    "coverage": "nyc -a -c -r html -r text -r lcov npm test",
+    "coverage": "c8 npm test",
     "pretest": "semistandard --env mocha",
     "test": "mocha --recursive test",
     "watch": "mocha --recursive --watch test",
@@ -20,32 +20,34 @@
   "bugs": {
     "url": "https://github.com/noblesamurai/node-log2amqp/issues"
   },
-  "engines": {
-    "node": ">=8.0",
-    "npm": "3.x"
-  },
   "dependencies": {
     "amqp-wrapper": "^5.5.0",
+    "amqplib": "^0.7.1",
     "debug": "^2.6.6",
     "joi": "^13.5.2",
+    "simple-amqplib": "^7.0.3",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
+    "c8": "^7.7.1",
+    "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
-    "dirty-chai": "^1.2.2",
-    "jsdoc-to-markdown": "^4.0.1",
-    "mocha": "^5.2.0",
-    "nyc": "^10.3.2",
-    "proxyquire": "^1.7.11",
+    "dirty-chai": "^2.0.1",
+    "jsdoc-to-markdown": "^7.0.1",
+    "mocha": "^8.3.2",
+    "proxyquire": "^2.1.3",
     "semistandard": "*",
-    "sinon": "^6.1.4"
+    "sinon": "^10.0.0"
   },
   "keywords": [],
-  "nyc": {
-    "exclude": [
-      "coverage",
-      "test"
+  "c8": {
+    "all": true,
+    "include": [
+      "src"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
     ]
   },
   "semistandard": {

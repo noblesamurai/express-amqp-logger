@@ -38,7 +38,7 @@ describe('amqp-logger', function () {
     beforeEach(function () {
       publishStub = sinon.stub().resolves();
       const AMQPLogger = proxyquire('..', {
-        'amqp-wrapper': function () {
+        'simple-amqplib': function () {
           return {
             connect: sinon.stub().resolves(),
             publish: publishStub
@@ -51,7 +51,7 @@ describe('amqp-logger', function () {
         schemaVersion: 2
       };
       logger = new AMQPLogger(config);
-      obj = {thing: 'that'};
+      obj = { thing: 'that' };
       arr = [1, 2, 3];
       logger.log('moo', obj);
       logger.log('fips', obj);
@@ -105,7 +105,7 @@ describe('amqp-logger', function () {
 
     it('support payload version 3', async function () {
       const AMQPLogger = proxyquire('..', {
-        'amqp-wrapper': function () {
+        'simple-amqplib': function () {
           return {
             connect: sinon.stub().resolves(),
             publish: publishStub
