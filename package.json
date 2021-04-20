@@ -21,11 +21,10 @@
     "url": "https://github.com/noblesamurai/node-log2amqp/issues"
   },
   "dependencies": {
-    "amqp-wrapper": "^5.5.0",
     "amqplib": "^0.7.1",
     "debug": "^2.6.6",
     "joi": "^13.5.2",
-    "simple-amqplib": "^7.0.3",
+    "simple-amqplib": "^7.0.4",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
