@@ -23,11 +23,11 @@ logger.log('kind2', 'chris');
 logger.flush({ meta: {/* ... */} }).then(() => {
   // [{ kind: payload }, { kind2: 'chris' }] is flushed to amqp routingKey (schemaVersion === 2)
   // OR
-  /* 
+  /*
   [
     { type: 'kind',
      data: 'payload'
-     }, 
+     },
     {
       type: 'kind2',
       data: 'chris'
@@ -107,6 +107,21 @@ This module is installed via npm:
 ``` bash
 $ npm install log2amqp
 ```
+
+## Contributing
+
+### Prerequisites
+
+```
+$ pip install pre-commit
+```
+
+### Installation
+
+```
+$ pre-commit install --install-hooks
+```
+
 ## License
 
 The BSD License
